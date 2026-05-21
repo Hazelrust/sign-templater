@@ -19,7 +19,7 @@ namespace sign_templater
         private TextBox txtExtraID;
         private Label lblExtraID;
         private ComboBox comboDegree;
-        private CheckedListBox listDocuments;
+        private FlowLayoutPanel flowDocuments;
         private Button btnGenerate;
 
         public SidebarControl()
@@ -30,88 +30,177 @@ namespace sign_templater
 
         private void SetupCustomUI()
         {
-            this.AutoScroll = true;
-            int currentY = 20;
+            this.AutoScroll = false;
             int padding = 20;
-            int controlWidth = this.Width - (padding * 2);
+            int controlWidth = this.Width - (padding * 2) - 15;
 
-            // 0. Degree Level
-            Label lblDegree = new Label { Text = "ระดับการศึกษา:", Location = new System.Drawing.Point(padding, currentY), Width = controlWidth };
-            currentY += 25;
-            comboDegree = new ComboBox { Location = new System.Drawing.Point(padding, currentY), Width = controlWidth, DropDownStyle = ComboBoxStyle.DropDownList };
+            // 1. Bottom Panel for Button (Always Visible)
+            Panel pnlBottom = new Panel
+            {
+                Dock = DockStyle.Bottom,
+                Height = 75,
+                Padding = new Padding(padding, 5, padding, 15)
+            };
+            btnGenerate = new Button
+            {
+                Text = "Fill / Update Current Template",
+                Dock = DockStyle.Fill,
+                BackColor = System.Drawing.Color.LightGreen,
+                Font = new System.Drawing.Font(this.Font, System.Drawing.FontStyle.Bold)
+            };
+            btnGenerate.Click += btnGenerate_Click;
+            pnlBottom.Controls.Add(btnGenerate);
+
+            // 2. Top Flow Panel for Inputs (Auto-adjusting height)
+            FlowLayoutPanel flowTop = new FlowLayoutPanel
+            {
+                Dock = DockStyle.Top,
+                AutoSize = true,
+                AutoSizeMode = AutoSizeMode.GrowAndShrink,
+                FlowDirection = FlowDirection.TopDown,
+                WrapContents = false,
+                Padding = new Padding(padding, 10, padding, 10)
+            };
+
+            // Degree Level
+            flowTop.Controls.Add(new Label { Text = "ระดับการศึกษา:", Width = controlWidth });
+            comboDegree = new ComboBox { Width = controlWidth, DropDownStyle = ComboBoxStyle.DropDownList };
             comboDegree.Items.AddRange(new[] { "(None)", "Bachelor Degree", "Master Degree", "Graduate Diploma" });
-            comboDegree.SelectedIndex = 0; // Set default to (None)
-            currentY += 40;
+            comboDegree.SelectedIndex = 0; 
+            flowTop.Controls.Add(comboDegree);
 
-            // 1. Quick Select
-            Label lblQuick = new Label { Text = "เลือกที่อยู่ด่วน (Destinations):", Location = new System.Drawing.Point(padding, currentY), Width = controlWidth };
-            currentY += 25;
-            comboQuickDest = new ComboBox { Location = new System.Drawing.Point(padding, currentY), Width = controlWidth, DropDownStyle = ComboBoxStyle.DropDownList };
+            // Quick Select
+            flowTop.Controls.Add(new Label { Text = "เลือกที่อยู่ด่วน (Destinations):", Width = controlWidth, Margin = new Padding(0, 10, 0, 0) });
+            comboQuickDest = new ComboBox { Width = controlWidth, DropDownStyle = ComboBoxStyle.DropDownList };
             comboQuickDest.Items.AddRange(new[] { 
-                "Manual Input (พิมพ์เอง)",
-                "LSAC (Credential Assembly Service)",
-                "New York State BOLE",
-                "The Evaluation Company (Texas)",
-                "Harvard Law School",
-                "Michigan State University",
-                "George Mason University",
-                "University of Southern California (USC)",
-                "University of San Francisco",
-                "Hofstra University",
-                "University of Groningen (Netherlands)",
-                "Maastricht University (Netherlands)",
-                "Universiteit Leiden (Netherlands)",
-                "Maurer School of Law (Indiana)",
-                "East-West Center (Hawaii)",
+                "Manual Input (พิมพ์เอง)", "LSAC (Credential Assembly Service)", "New York State BOLE",
+                "The Evaluation Company (Texas)", "Harvard Law School", "Michigan State University",
+                "George Mason University", "University of Southern California (USC)", "University of San Francisco",
+                "Hofstra University", "University of Groningen (Netherlands)", "Maastricht University (Netherlands)",
+                "Universiteit Leiden (Netherlands)", "Maurer School of Law (Indiana)", "East-West Center (Hawaii)",
                 "Federation of Law Societies of Canada"
             });
             comboQuickDest.SelectedIndexChanged += (s, e) => ApplyQuickAddress();
-            currentY += 40;
+            flowTop.Controls.Add(comboQuickDest);
 
-            // 2. Admission No
-            Label lblId = new Label { Text = "Admission No:", Location = new System.Drawing.Point(padding, currentY), Width = controlWidth };
-            currentY += 25;
-            txtAdmissionNo = new TextBox { Location = new System.Drawing.Point(padding, currentY), Width = controlWidth };
-            currentY += 40;
+            // Admission No
+            flowTop.Controls.Add(new Label { Text = "Admission No:", Width = controlWidth, Margin = new Padding(0, 10, 0, 0) });
+            txtAdmissionNo = new TextBox { Width = controlWidth };
+            flowTop.Controls.Add(txtAdmissionNo);
 
-            // 2.1 Extra ID (Dynamic)
-            lblExtraID = new Label { Text = "Extra ID:", Location = new System.Drawing.Point(padding, currentY), Width = controlWidth, Visible = false };
-            currentY += 25;
-            txtExtraID = new TextBox { Location = new System.Drawing.Point(padding, currentY), Width = controlWidth, Visible = false };
-            currentY += 40;
+            // Extra ID (LSAC/BOLE)
+            lblExtraID = new Label { Text = "Extra ID:", Width = controlWidth, Visible = false, Margin = new Padding(0, 10, 0, 0) };
+            txtExtraID = new TextBox { Width = controlWidth, Visible = false };
+            flowTop.Controls.Add(lblExtraID);
+            flowTop.Controls.Add(txtExtraID);
 
-            // 3. Address Textbox
-            Label lblAddr = new Label { Text = "ที่อยู่ผู้รับ (Recipient Address):", Location = new System.Drawing.Point(padding, currentY), Width = controlWidth };
-            currentY += 25;
-            txtAddress = new TextBox { Location = new System.Drawing.Point(padding, currentY), Width = controlWidth, Height = 100, Multiline = true, ScrollBars = ScrollBars.Vertical };
-            currentY += 110;
+            // Address
+            flowTop.Controls.Add(new Label { Text = "ที่อยู่ผู้รับ (Recipient Address):", Width = controlWidth, Margin = new Padding(0, 10, 0, 0) });
+            txtAddress = new TextBox { Width = controlWidth, Height = 100, Multiline = true, ScrollBars = ScrollBars.Vertical };
+            flowTop.Controls.Add(txtAddress);
 
-            // 4. Document Checklist
-            Label lblDocs = new Label { Text = "รายการเอกสาร (Checklist):", Location = new System.Drawing.Point(padding, currentY), Width = controlWidth };
-            currentY += 25;
-            listDocuments = new CheckedListBox { Location = new System.Drawing.Point(padding, currentY), Width = controlWidth, Height = 180 };
-            listDocuments.Items.AddRange(new[] { 
-                "Official Transcript of Record (English)",
-                "Official Transcript of Record (Thai)",
-                "Academic Transcript (English ver.)",
-                "Certificate of Academic Achievement (English)",
-                "Certificate of Academic Achievement (Thai)",
-                "Certificate of Student Status (English)",
-                "Certificate of Student Status (Thai)",
-                "Certificate of class ranking (English)",
-                "Translation of Certificate (English)",
-                "Verification of Names",
-                "LSAC Form",
-                "Replacement Diploma (Thai)",
-                "Unfulfilled Transcript"
-            });
-            currentY += 200;
+            // Checklist Header
+            flowTop.Controls.Add(new Label { Text = "รายการเอกสาร (Checklist):", Width = controlWidth, Margin = new Padding(0, 10, 0, 5) });
 
-            // 5. Generate Button
-            btnGenerate = new Button { Text = "Fill / Update Current Template", Location = new System.Drawing.Point(padding, currentY), Width = controlWidth, Height = 50, BackColor = System.Drawing.Color.LightGreen, Font = new System.Drawing.Font(this.Font, System.Drawing.FontStyle.Bold) };
-            btnGenerate.Click += btnGenerate_Click;
+            // 3. Middle Flow Panel for Documents
+            flowDocuments = new FlowLayoutPanel
+            {
+                Dock = DockStyle.Fill,
+                AutoScroll = true,
+                FlowDirection = FlowDirection.TopDown,
+                WrapContents = false,
+                BorderStyle = BorderStyle.FixedSingle,
+                BackColor = System.Drawing.Color.White,
+                Padding = new Padding(5)
+            };
+
+            string[] docItems = new[] { 
+                // Current Students
+                "Official Transcript (Current Students) (English)\v(ใบรายงานผลการศึกษา ภาษาอังกฤษ)",
+                "Student Status Certificate (English)\v(ใบรับรองการเป็นนักศึกษา ภาษาอังกฤษ)",
+                "Student Status Certificate (Thai)\v(ใบรับรองการเป็นนักศึกษา ภาษาไทย)",
+                "Certificate of Expected Graduation (English)\v(ใบรับรองคาดว่าจะสำเร็จการศึกษา ภาษาอังกฤษ)",
+                "Certificate of Expected Graduation (Thai)\v(ใบรับรองคาดว่าจะสำเร็จการศึกษา ภาษาไทย)",
+                "Certificate of Completion of All Coursework (English)\v(ใบรับรองสอบไล่ได้ครบทุกวิชา ภาษาอังกฤษ)",
+                "Certificate of Completion of All Coursework (Thai)\v(ใบรับรองสอบไล่ได้ครบทุกวิชา ภาษาไทย)",
+                "Associate degree Certificate (Thai)\v(ใบรับรองอนุปริญญา ภาษาไทย)",
+                
+                // Alumni
+                "Certified Copies of Educational Documents\v(สำเนาเอกสารทางการศึกษา)",
+                "Official Transcript (English)\v(ใบรายงานผลการศึกษา ภาษาอังกฤษ)",
+                "Official Transcript (Thai)\v(ใบรายงานผลการศึกษา ภาษาไทย)",
+                "Certificate of Academic Achievement (English)\v(หนังสือรับรองคุณวุฒิ ภาษาอังกฤษ)",
+                "Certificate of Academic Achievement (Thai)\v(หนังสือรับรองคุณวุฒิ ภาษาไทย)",
+                "Certified Translation of Degree Certificate (English)\v(ใบแปลปริญญาบัตร ภาษาอังกฤษ)",
+                "Sealed Envelopes Service\v(ซองปิดผนึกบรรจุสำเนาเอกสารทางการศึกษา)",
+                "Name Verification (English)\v(หนังสือรับรองตัวสะกด ชื่อ-นามสกุล)",
+                "Certificate of Former Student Status (English)\v(ใบรับรองเคยเป็นนักศึกษา ภาษาอังกฤษ)",
+                "Certificate of Former Student Status (Thai)\v(ใบรับรองเคยเป็นนักศึกษา ภาษาไทย)",
+                "Transcript for a Non-Graduated Former Student (English)\v(Transcript หมดสภาพ)",
+                "Replacement Diploma (Thai)\v(ใบแทนปริญญาบัตร)",
+                
+                // Others / Existing
+                "Certificate of class ranking (English)\v(ใบรับรองลำดับที่ผลการเรียน ภาษาอังกฤษ)",
+                "LSAC Form\v(แบบฟอร์ม LSAC)",
+            };
+
+            foreach (var item in docItems)
+            {
+                AddDocRow(item.Replace("\v", Environment.NewLine), controlWidth);
+            }
+
+            // 3.1 Manual Input Row (Add at the end of checklist)
+            AddManualInputRow(controlWidth);
+
+            // Wrapper for checklist
+            Panel pnlCenter = new Panel { Dock = DockStyle.Fill, Padding = new Padding(padding, 0, padding, 0) };
+            pnlCenter.Controls.Add(flowDocuments);
+
+            // Add in order: Bottom first, then Top, then Fill
+            this.Controls.Add(pnlCenter);
+            this.Controls.Add(flowTop);
+            this.Controls.Add(pnlBottom);
+        }
+
+        private void AddDocRow(string text, int controlWidth)
+        {
+            Panel row = new Panel { Width = controlWidth - 10, AutoSize = true, Margin = new Padding(0, 0, 0, 5) };
             
-            this.Controls.AddRange(new Control[] { lblDegree, comboDegree, lblQuick, comboQuickDest, lblId, txtAdmissionNo, lblExtraID, txtExtraID, lblAddr, txtAddress, lblDocs, listDocuments, btnGenerate });
+            CheckBox cb = new CheckBox
+            {
+                Text = text,
+                AutoSize = true,
+                Location = new System.Drawing.Point(0, 0),
+                MaximumSize = new System.Drawing.Size(controlWidth - 20, 0),
+                Tag = "DOC_CB"
+            };
+
+            row.Controls.Add(cb);
+            flowDocuments.Controls.Add(row);
+        }
+
+        private void AddManualInputRow(int controlWidth)
+        {
+            Panel row = new Panel { Width = controlWidth - 10, Height = 45, Margin = new Padding(0, 10, 0, 5) };
+            
+            CheckBox cb = new CheckBox
+            {
+                Text = "อื่นๆ (Manual Input):",
+                AutoSize = true,
+                Location = new System.Drawing.Point(0, 0),
+                Tag = "MANUAL_CB"
+            };
+
+            TextBox txt = new TextBox
+            {
+                Width = controlWidth - 40,
+                Location = new System.Drawing.Point(20, 22),
+                Tag = "MANUAL_TXT"
+            };
+
+            row.Controls.Add(cb);
+            row.Controls.Add(txt);
+            flowDocuments.Controls.Add(row);
         }
 
         private void ApplyQuickAddress()
@@ -228,7 +317,30 @@ namespace sign_templater
                 if (!string.IsNullOrEmpty(degree)) mainBlockParts.Add(degree);
                 if (!string.IsNullOrEmpty(extraIdText)) mainBlockParts.Add(extraIdText);
                 
-                string formattedDocs = string.Join("\v", listDocuments.CheckedItems.Cast<string>().Select(d => d + "\t1"));
+                // Collect checked documents from FlowLayoutPanel
+                List<string> selectedDocs = new List<string>();
+                foreach (Control row in flowDocuments.Controls)
+                {
+                    if (row is Panel pnl)
+                    {
+                        CheckBox cb = pnl.Controls.OfType<CheckBox>().FirstOrDefault();
+                        if (cb != null && cb.Checked && cb.Tag?.ToString() == "DOC_CB")
+                        {
+                            // Keep only English part (first line)
+                            string englishPart = cb.Text.Split(new[] { Environment.NewLine }, StringSplitOptions.None)[0];
+                            selectedDocs.Add(englishPart);
+                        }
+                        
+                        // Check for Manual Input TextBox
+                        TextBox manualTxt = pnl.Controls.OfType<TextBox>().Where(t => t.Tag?.ToString() == "MANUAL_TXT").FirstOrDefault();
+                        if (manualTxt != null && !string.IsNullOrWhiteSpace(manualTxt.Text))
+                        {
+                            selectedDocs.Add(manualTxt.Text);
+                        }
+                    }
+                }
+
+                string formattedDocs = string.Join("\v", selectedDocs);
                 if (!string.IsNullOrEmpty(formattedDocs)) mainBlockParts.Add(formattedDocs);
 
                 string finalMainBlock = string.Join("\v", mainBlockParts);
