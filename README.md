@@ -15,7 +15,7 @@
 ### วิธีที่ 1: ติดตั้งสำหรับผู้ใช้งานทั่วไป (ง่ายที่สุด)
 เพื่อความง่ายในการติดตั้ง คุณสามารถใช้ไฟล์ติดตั้ง (Installer) ที่เตรียมไว้ได้เลย:
 
-1.  **ดาวน์โหลด**: [ดาวโหลด]([https://github.com/Hazelrust/sign-templater/releases/tag/pre-release](https://github.com/Hazelrust/sign-templater/releases/tag/release)) (จะมีไฟล์ชื่อ `setup.exe` อยู่ข้างใน)
+1.  **ดาวน์โหลด**: [ดาวโหลด](https://github.com/Hazelrust/sign-templater/releases/tag/release) (จะมีไฟล์ชื่อ `setup.exe` อยู่ข้างใน)
 3.  **แตกไฟล์ (Unzip)**: แตกไฟล์ `.zip` ให้ออกมาก่อน
 4.  **ติดตั้ง**: ดับเบิลคลิกที่ไฟล์ `setup.exe`
 5.  **ยืนยัน**: หากมีหน้าจอความปลอดภัย (Microsoft Defender) เด้งขึ้นมา ให้กด **More info** แล้วเลือก **Run anyway** จากนั้นกด **Install** ตามขั้นตอน
