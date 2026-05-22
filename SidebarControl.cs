@@ -328,14 +328,19 @@ namespace sign_templater
                         {
                             // Keep only English part (first line)
                             string englishPart = cb.Text.Split(new[] { Environment.NewLine }, StringSplitOptions.None)[0];
-                            selectedDocs.Add(englishPart);
+                            selectedDocs.Add(englishPart + "\t1");
                         }
                         
                         // Check for Manual Input TextBox
                         TextBox manualTxt = pnl.Controls.OfType<TextBox>().Where(t => t.Tag?.ToString() == "MANUAL_TXT").FirstOrDefault();
                         if (manualTxt != null && !string.IsNullOrWhiteSpace(manualTxt.Text))
                         {
-                            selectedDocs.Add(manualTxt.Text);
+                            // We need to find if the associated checkbox is checked
+                            CheckBox manualCb = pnl.Controls.OfType<CheckBox>().Where(c => c.Tag?.ToString() == "MANUAL_CB").FirstOrDefault();
+                            if (manualCb != null && manualCb.Checked)
+                            {
+                                selectedDocs.Add(manualTxt.Text + "\t1");
+                            }
                         }
                     }
                 }
