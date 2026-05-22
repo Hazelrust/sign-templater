@@ -123,7 +123,7 @@ namespace sign_templater
                 "Certificate of Expected Graduation (Thai)\v(ใบรับรองคาดว่าจะสำเร็จการศึกษา ภาษาไทย)",
                 "Certificate of Completion of All Coursework (English)\v(ใบรับรองสอบไล่ได้ครบทุกวิชา ภาษาอังกฤษ)",
                 "Certificate of Completion of All Coursework (Thai)\v(ใบรับรองสอบไล่ได้ครบทุกวิชา ภาษาไทย)",
-                "Associate degree Certificate (Thai)\v(ใบรับรองอนุปริญญา ภาษาไทย)",
+                "Associate Degree Certificate (Thai)\v(ใบรับรองอนุปริญญา ภาษาไทย)",
                 
                 // Alumni
                 "Certified Copies of Educational Documents\v(สำเนาเอกสารทางการศึกษา)",
@@ -133,11 +133,11 @@ namespace sign_templater
                 "Certificate of Academic Achievement (Thai)\v(หนังสือรับรองคุณวุฒิ ภาษาไทย)",
                 "Certified Translation of Degree Certificate (English)\v(ใบแปลปริญญาบัตร ภาษาอังกฤษ)",
                 "Sealed Envelopes Service\v(ซองปิดผนึกบรรจุสำเนาเอกสารทางการศึกษา)",
-                "Name Verification (English)\v(หนังสือรับรองตัวสะกด ชื่อ-นามสกุล)",
+                "Name Verification (English)\v(หนังสือรับรองตัวสะกด ชื่อ-นามสกุล ภาษาอังกฤษ)",
                 "Certificate of Former Student Status (English)\v(ใบรับรองเคยเป็นนักศึกษา ภาษาอังกฤษ)",
                 "Certificate of Former Student Status (Thai)\v(ใบรับรองเคยเป็นนักศึกษา ภาษาไทย)",
-                "Transcript for a Non-Graduated Former Student (English)\v(Transcript หมดสภาพ)",
-                "Replacement Diploma (Thai)\v(ใบแทนปริญญาบัตร)",
+                "Transcript for a Non-Graduated Former Student (English)\v(Transcript อดีตนักศึกษา ภาษาอังกฤษ)",
+                "Replacement Diploma (Thai)\v(ใบแทนปริญญาบัตร ภาษาไทย)",
                 
                 // Others / Existing
                 "Certificate of class ranking (English)\v(ใบรับรองลำดับที่ผลการเรียน ภาษาอังกฤษ)",
@@ -212,7 +212,7 @@ namespace sign_templater
             if (selected.Contains("LSAC"))
             {
                 txtAddress.Text = "Law School Admission Council\vLLM Credential Assembly Service\v662 Penn Street, Box 8511\vNewtown, PA 18940-8511 USA";
-                lblExtraID.Text = "LSAC Number:";
+                lblExtraID.Text = "LSAC No.";
                 lblExtraID.Visible = true;
                 txtExtraID.Visible = true;
             }
@@ -300,7 +300,7 @@ namespace sign_templater
                 {
                     string selected = comboQuickDest.Text;
                     if (selected.Contains("LSAC"))
-                        extraIdText = $"LSAC number : {txtExtraID.Text}";
+                        extraIdText = $"LSAC No. {txtExtraID.Text}";
                     else if (selected.Contains("BOLE"))
                         extraIdText = $"BOLE ID: {txtExtraID.Text}";
                     else
